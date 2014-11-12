@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <name>jni-native-lib</name>
+
+    <parent>
+        <groupId>in.sangram</groupId>
+        <artifactId>sample-maven-jni-project</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>in.sangram.lib</groupId>
+    <artifactId>libjniJniAdaptor</artifactId>
+    <version>1.0</version>
+    <packaging>jnilib</packaging>
+
+    <properties>
+        <native.source.dir>${basedir}/src/main/native</native.source.dir>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <version>1.0-alpha-8</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <javahOS>mac</javahOS>
+
+                    <jdkIncludePath>/System/Library/Frameworks/JavaVM.framework/Versions/A/Headers</jdkIncludePath>
+                    <compilerProvider>generic-classic</compilerProvider>
+                    <compilerExecutable>gcc</compilerExecutable>
+                    <linkerExecutable>gcc</linkerExecutable>
+                    <sources>
+                        <source>
+                            <directory>${native.source.dir}</directory>
+                            <fileNames>
+                                <fileName>JniAdaptor.c</fileName>
+                            </fileNames>
+                        </source>
+                        <source>
+                            <directory>${native.source.dir}/includes</directory>
+                        </source>
+                    </sources>
+                    <linkerStartOptions>
+                        <linkerStartOption>-shared</linkerStartOption>
+                    </linkerStartOptions>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>javah</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>javah</goal>
+                        </goals>
+                        <configuration>
+                            <attach>true</attach>
+                            <javahProvider>default</javahProvider>
+                            <javahSearchJNIFromDependencies>true</javahSearchJNIFromDependencies>
+                            <javahOutputDirectory>${native.source.dir}/includes</javahOutputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>link</goal>
+                        </goals>
+                        <configuration>
+                            <attach>true</attach>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>in.sangram.jni</groupId>
+            <artifactId>jni-definition</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>
